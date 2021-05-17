@@ -1,35 +1,28 @@
 const puppeteer = require("puppeteer-extra");
 const AdblockerPlugin = require("puppeteer-extra-plugin-adblocker");
+puppeteer.use(AdblockerPlugin());
 
-const URL_TO_TEST =
-  "https://www.euronews.com/2021/05/17/lockdown-begins-to-lift-in-uk-amid-worries-over-indian-variant";
+const URL_TO_TEST = "https://www.youtube.com/watch?v=aT2haaX-kXw";
 
-// Add adblocker plugin, which will transparently block ads in all pages you
-// create using puppeteer.
-const adblocker = AdblockerPlugin({
-  blockTrackers: true,
-  useCache: true, // default: false
-});
-puppeteer.use(adblocker);
+(async () => {
+  const browser = await puppeteer.launch();
+  const context = await browser.createIncognitoBrowserContext();
+  const page = await context.newPage();
 
-// puppeteer usage as normal
-puppeteer.launch({ headless: true }).then(async (browser) => {
-  const page = await browser.newPage();
   await page.setViewport({
     width: 1920,
     height: 1080,
     deviceScaleFactor: 1,
   });
 
-  // Visit a page, ads are blocked automatically!
+  // cleaning cookies just in case we alredy accepted the use of cookies before
   const client = await page.target().createCDPSession();
   await await client.send("Network.clearBrowserCookies");
+
   await page.goto(URL_TO_TEST, {
     //waiting until the page fully loades before doing anything
     waitUntil: "domcontentloaded",
   });
-
-  await page.waitForTimeout(5 * 1000);
 
   //closing all page dialogs / popups built using js
   page.on("dialog", async (dialog) => {
@@ -45,21 +38,17 @@ puppeteer.launch({ headless: true }).then(async (browser) => {
   // and search for the terms in that langauge like agree or accept or i understand
   // for now we look only for gree for this example or you can set your own term
 
-  const term = "gree";
-
-  //this is a xpath https://www.webperformance.com/load-testing-tools/blog/articles/real-browser-manual/building-a-testcase/how-locate-element-the-page/xpath-locator-examples/
-  const buttons = await page.$x("//*[text()[contains(.,'Agree')]]");
+  const term = "Consent";
+  const buttons = await page.$x("//a[contains(., term)]");
   //console.log(buttons);
   if (buttons.length > 0) {
     console.log("found button");
-    console.log(buttons);
-    //await buttons[0].click();
-    buttons.forEach(async (btn) => {
-      await btn.click();
-    });
+    await buttons[0].click();
   }
-  await page.screenshot({ path: "test.png", fullPage: true });
 
-  console.log(`All done, check the screenshots. ✨`);
+  await page.screenshot({
+    path: "screenshot.png",
+    fullPage: true,
+  });
   await browser.close();
-});
+})();
