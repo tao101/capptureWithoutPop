@@ -1,6 +1,6 @@
 const puppeteer = require("puppeteer");
 
-const URL_TO_TEST = "https://rusvesna.su/";
+const URL_TO_TEST = "https://github.com/tao101/screenshotWihoutpopup";
 
 (async () => {
   const browser = await puppeteer.launch();
@@ -12,6 +12,7 @@ const URL_TO_TEST = "https://rusvesna.su/";
     height: 1080,
     deviceScaleFactor: 1,
   });
+
   // cleaning cookies just in case we alredy accepted the use of cookies before
   const client = await page.target().createCDPSession();
   await await client.send("Network.clearBrowserCookies");
@@ -22,6 +23,7 @@ const URL_TO_TEST = "https://rusvesna.su/";
   });
 
   console.log("trying to find button");
+
   //gree is the word in the popup Agree
   //here we can get the lang from the html of the website to get the website language  (<html lang="en">)
   // and search for the terms in that langauge like agree or accept or i understand
@@ -33,6 +35,9 @@ const URL_TO_TEST = "https://rusvesna.su/";
     await buttons[0].click();
   }
 
-  await page.screenshot({ path: URL_TO_TEST.slice(0, 20), fullPage: true });
+  await page.screenshot({
+    path: "a.png",
+    fullPage: true,
+  });
   await browser.close();
 })();
