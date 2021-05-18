@@ -39,7 +39,7 @@ const URL_TO_TEST = "https://www.youtube.com/watch?v=aT2haaX-kXw";
   // for now we look only for gree for this example or you can set your own term
 
   const term = "Consent";
-  const buttons = await page.$x("//a[contains(., term)]");
+  const buttons = await page.$x("//a[contains(., Consent)]");
   //console.log(buttons);
   if (buttons.length > 0) {
     console.log("found button");

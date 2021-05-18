@@ -46,18 +46,13 @@ puppeteer.launch({ headless: true }).then(async (browser) => {
   // for now we look only for gree for this example or you can set your own term
 
   const term = "gree";
-
-  //this is a xpath https://www.webperformance.com/load-testing-tools/blog/articles/real-browser-manual/building-a-testcase/how-locate-element-the-page/xpath-locator-examples/
-  const buttons = await page.$x("//*[text()[contains(.,'Agree')]]");
+  const buttons = await page.$x("//span[contains(., gree)]");
   //console.log(buttons);
   if (buttons.length > 0) {
     console.log("found button");
-    console.log(buttons);
-    //await buttons[0].click();
-    buttons.forEach(async (btn) => {
-      await btn.click();
-    });
+    await buttons[0].click();
   }
+
   await page.screenshot({ path: "test.png", fullPage: true });
 
   console.log(`All done, check the screenshots. ✨`);
